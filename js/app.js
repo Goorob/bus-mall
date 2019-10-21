@@ -1,4 +1,5 @@
 'use strict'
+var ctx = document.getElementById('myChart').getContext('2d');
 function TheSale(title, src) {
     this.title = title;
     this.src = src;
@@ -137,7 +138,7 @@ function clickHandler(event) {
         if (TheSale.roundCtr === TheSale.roundLimit) {
 
             alert('The end of voting ! Thank you ');
-
+            salesChart();
             TheSale.container.removeEventListener('click', clickHandler);
 
         } else {
@@ -148,8 +149,62 @@ function clickHandler(event) {
 }
 
 TheSale.container.addEventListener('click', clickHandler);
+function getTheSaleTitles() {
 
-updateTotals();
+    var saleTitles = [];
+  
+    for(var i = 0; i < TheSale.all.length; i++) {
+      var saleInstance = TheSale.all[i];
+      saleTitles.push(saleInstance.title );
+    
+    }
+    return saleTitles;
+  }
+  function click () {
+      var clickCounter =[];
+      for(var i = 0; i <TheSale.all.length; i++) {
+    
+        var clickInstance = TheSale.all[i];
+       
+        clickCounter.push(clickInstance.clickCtr );
+       
+      }
+      return clickCounter ;
+  }
+  function shown (){
+    var shownCounter=[];
+    for(var i = 0; i <TheSale.all.length; i++) {
+    var shownTnstance = TheSale.all[i];
+    shownCounter.push(shownTnstance.shownCtr);
+    }
+    return  shownCounter;
+  }
+function salesChart(){
+
+console.log('chart' , chart)
+var chart = new Chart(ctx, {
+    type: 'bar',
+ 
+    data: {
+        labels: getTheSaleTitles()  ,
+        datasets: [
+            {
+            label: 'click ',
+            backgroundColor: 'white',
+            borderColor: 'black',
+            data: click() ,
+        } ,
+        { label: 'shown ',
+        backgroundColor: 'blue',
+        borderColor: 'black',
+        data: shown() ,
+        }
+    ]
+    },
+    options: {}
+});
+}
+
+ updateTotals();
 
 renderNewTheSale();
-
