@@ -1,4 +1,5 @@
 'use strict'
+var sales = document.getElementById('sales');
 var ctx = document.getElementById('myChart').getContext('2d');
 function TheSale(title, src) {
     this.title = title;
@@ -7,6 +8,7 @@ function TheSale(title, src) {
     this.shownCtr = 0;
     TheSale.all.push(this);
 }
+
 TheSale.roundCtr = 0;
 TheSale.roundLimit = 25;
 TheSale.all = [];
@@ -21,7 +23,6 @@ TheSale.rightTitle = document.getElementById('right-sale-title');
 TheSale.leftObject = null;
 TheSale.centerObject = null;
 TheSale.rightObject = null;
-
 
 
 new TheSale('bag', 'images/bag.jpg');
@@ -44,10 +45,29 @@ new TheSale('unicorn', 'images/unicorn.jpg');
 new TheSale('usb', 'images/usb.gif');
 new TheSale('water-can', 'images/water-can.jpg');
 new TheSale('wine-glass', 'images/wine-glass.jpg');
+
+function updateSales() {
+    var salesString = JSON.stringify(TheSale.all);
+    localStorage.setItem('sales', salesString);
+}
+function getSales() {
+    var data = localStorage.getItem('sales');
+    var salesData = JSON.parse(data);
+    if (salesData) {
+        for (var i = 0; i < salesData.length; i++) {
+            var rawSalesObject = salesData[i];
+            var newSale = TheSale.all[i] ;
+            newSale.clickCtr=rawSalesObject.clickCtr ; 
+            newSale.shownCtr=rawSalesObject.shownCtr ;
+        } 
+        
+        renderNewTheSale(); }
+    }
+
+
 function renderNewTheSale() {
 
-    
-    var forbidden = [TheSale.leftObject,TheSale.centerObject , TheSale.rightObject];
+    var forbidden = [TheSale.leftObject, TheSale.centerObject, TheSale.rightObject];
 
     do {
 
@@ -61,17 +81,17 @@ function renderNewTheSale() {
     do {
 
         TheSale.centerObject = getRandomTheSale();
-       
+
     } while (forbidden.includes(TheSale.centerObject));
 
     forbidden.push(TheSale.centerObject);
-    
+
     do {
 
         TheSale.rightObject = getRandomTheSale();
 
     } while (forbidden.includes(TheSale.rightObject));
-   
+
 
     TheSale.leftObject.shownCtr++;
     TheSale.centerObject.shownCtr++;
@@ -96,24 +116,24 @@ function getRandomTheSale() {
 }
 
 function updateTotals() {
- var printOut = document.getElementById('sales');
-      printOut.innerHTML = '';
+    var printOut = document.getElementById('sales');
+    printOut.innerHTML = '';
     for (var i = 0; i < TheSale.all.length; i++) {
-      var sale = TheSale.all[i];
+        var sale = TheSale.all[i];
         var data = addElement('data', printOut);
-        addElement('p', data , sale.title + ' had ' +sale.clickCtr +' votes and was shown ' +sale.shownCtr +' times' )
-     
+        addElement('section', data, sale.title + ' had ' + sale.clickCtr + ' votes and was shown ' + sale.shownCtr + ' times')
+
     }
-  }
-  
-  function addElement(tag, container, text) {
+}
+
+function addElement(tag, container, text) {
     var element = document.createElement(tag);
     container.appendChild(element);
-    if(text) {
-      element.textContent = text;
+    if (text) {
+        element.textContent = text;
     }
     return element;
-  }
+}
 function clickHandler(event) {
 
     var clickedId = event.target.id;
@@ -123,10 +143,10 @@ function clickHandler(event) {
         saleClicked = TheSale.leftObject;
     } else if (clickedId === 'center-sale-image') {
         saleClicked = TheSale.centerObject;
-     } else if (clickedId === 'right-sale-image') {
-            saleClicked = TheSale.rightObject;  
+    } else if (clickedId === 'right-sale-image') {
+        saleClicked = TheSale.rightObject;
     } else {
-        console.log( clickedId);
+        console.log(clickedId);
     }
 
     if (saleClicked) {
@@ -140,7 +160,7 @@ function clickHandler(event) {
             alert('The end of voting ! Thank you ');
             salesChart();
             TheSale.container.removeEventListener('click', clickHandler);
-
+            updateSales();
         } else {
 
             renderNewTheSale();
@@ -152,59 +172,66 @@ TheSale.container.addEventListener('click', clickHandler);
 function getTheSaleTitles() {
 
     var saleTitles = [];
-  
-    for(var i = 0; i < TheSale.all.length; i++) {
-      var saleInstance = TheSale.all[i];
-      saleTitles.push(saleInstance.title );
-    
+
+    for (var i = 0; i < TheSale.all.length; i++) {
+        var saleInstance = TheSale.all[i];
+        saleTitles.push(saleInstance.title);
+
     }
     return saleTitles;
-  }
-  function click () {
-      var clickCounter =[];
-      for(var i = 0; i <TheSale.all.length; i++) {
-    
-        var clickInstance = TheSale.all[i];
-       
-        clickCounter.push(clickInstance.clickCtr );
-       
-      }
-      return clickCounter ;
-  }
-  function shown (){
-    var shownCounter=[];
-    for(var i = 0; i <TheSale.all.length; i++) {
-    var shownTnstance = TheSale.all[i];
-    shownCounter.push(shownTnstance.shownCtr);
-    }
-    return  shownCounter;
-  }
-function salesChart(){
+}
+var clickCounter = [];
+function click() {
 
-console.log('chart' , chart)
-var chart = new Chart(ctx, {
-    type: 'bar',
- 
-    data: {
-        labels: getTheSaleTitles()  ,
-        datasets: [
-            {
-            label: 'click ',
-            backgroundColor: 'white',
-            borderColor: 'black',
-            data: click() ,
-        } ,
-        { label: 'shown ',
-        backgroundColor: 'blue',
-        borderColor: 'black',
-        data: shown() ,
-        }
-    ]
-    },
-    options: {}
-});
+    for (var i = 0; i < TheSale.all.length; i++) {
+
+        var clickInstance = TheSale.all[i];
+
+        clickCounter.push(clickInstance.clickCtr);
+
+    }
+    return clickCounter;
+}
+var shownCounter = [];
+function shown() {
+
+    for (var i = 0; i < TheSale.all.length; i++) {
+        var shownTnstance = TheSale.all[i];
+        shownCounter.push(shownTnstance.shownCtr);
+    }
+    return shownCounter;
+}
+function salesChart() {
+
+
+    var chart = new Chart(ctx, {
+
+        type: 'bar',
+
+        data: {
+            labels: getTheSaleTitles(),
+            datasets: [
+                {
+                    label: 'click ',
+                    backgroundColor: 'white',
+                    borderColor: 'black',
+                    data: click(),
+                },
+                {
+                    label: 'shown ',
+                    backgroundColor: 'blue',
+                    borderColor: 'black',
+                    data: shown(),
+                }
+            ]
+        },
+        options: {}
+    });
 }
 
- updateTotals();
+
 
 renderNewTheSale();
+
+getSales();
+updateTotals();
