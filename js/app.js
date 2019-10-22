@@ -158,7 +158,7 @@ function clickHandler(event) {
         if (TheSale.roundCtr === TheSale.roundLimit) {
 
             alert('The end of voting ! Thank you ');
-            // salesChart();
+            salesChart();
             TheSale.container.removeEventListener('click', clickHandler);
             updateSales();
         } else {
