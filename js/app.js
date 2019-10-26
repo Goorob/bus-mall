@@ -153,10 +153,10 @@ function clickHandler(event) {
         saleClicked.clickCtr++;
         TheSale.roundCtr++;
 
-        updateTotals();
+       
 
         if (TheSale.roundCtr === TheSale.roundLimit) {
-
+            updateTotals();
             alert('The end of voting ! Thank you ');
             salesChart();
             TheSale.container.removeEventListener('click', clickHandler);
@@ -234,4 +234,3 @@ function salesChart() {
 renderNewTheSale();
 
 getSales();
-updateTotals();
