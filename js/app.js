@@ -213,7 +213,7 @@ function salesChart() {
             datasets: [
                 {
                     label: 'click ',
-                    backgroundColor: 'white',
+                    backgroundColor: 'gray',
                     borderColor: 'black',
                     data: click(),
                 },
